@@ -1,0 +1,6 @@
+<V2>Hello World</V2>
+<green>Success</green>
+<255,0,0>Red Text</255,0,0>
+<typewriter><blue>Success</blue><typewriter>
+<<sleep(2000)>>
+<<$clear>>

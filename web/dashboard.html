@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CustomBuild — Dashboard</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #08080f;
+    --surface:  #0f0f1a;
+    --border:   rgba(255,255,255,0.07);
+    --primary:  #7c6fff;
+    --accent:   #4fc3f7;
+    --success:  #4caf50;
+    --error:    #ef5350;
+    --warn:     #ffa726;
+    --text:     #e0e0e0;
+    --muted:    #666;
+    --sidebar-w: 220px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    display: flex;
+  }
+
+  
+  .sidebar {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+  }
+
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-logo h1 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .sidebar-logo p {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+    letter-spacing: 1px;
+  }
+
+  nav { padding: 16px 0; flex: 1; }
+
+  nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 24px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: color 0.15s, background 0.15s;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  nav a:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+  nav a.active { color: var(--primary); background: rgba(124,111,255,0.08); border-left: 2px solid var(--primary); }
+
+  nav a .icon { font-size: 15px; width: 18px; text-align: center; }
+
+  .sidebar-footer {
+    padding: 20px 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .user-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; flex-shrink: 0;
+  }
+
+  .user-pill-text { overflow: hidden; }
+  .user-pill-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-pill-role { font-size: 11px; color: var(--muted); }
+
+  .logout-btn {
+    width: 100%;
+    padding: 9px;
+    background: transparent;
+    border: 1px solid rgba(239,83,80,0.3);
+    border-radius: 7px;
+    color: #ef9a9a;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .logout-btn:hover { background: rgba(239,83,80,0.08); }
+
+  
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 32px;
+    min-height: 100vh;
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-header {
+    margin-bottom: 28px;
+  }
+
+  .page-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .page-header p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+
+  
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+
+  .stat-label { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  .stat-value { font-size: 22px; font-weight: 700; margin-top: 6px; }
+
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .form-grid.cols3 { grid-template-columns: 2fr 1fr 1fr; }
+  .form-grid.cols1 { grid-template-columns: 1fr; }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+
+  .field label {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .field input, .field select {
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field input:focus, .field select:focus {
+    border-color: rgba(124,111,255,0.5);
+    background: rgba(124,111,255,0.04);
+  }
+
+  .field input::placeholder { color: #444; }
+
+  .field select option { background: #1a1a2e; }
+
+  .btn {
+    padding: 11px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    letter-spacing: 0.5px;
+  }
+
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-primary { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; }
+  .btn-danger  { background: rgba(239,83,80,0.15); color: #ef9a9a; border: 1px solid rgba(239,83,80,0.3); }
+  .btn-ghost   { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border); }
+
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-danger:hover  { background: rgba(239,83,80,0.25); }
+  .btn-ghost:hover   { background: rgba(255,255,255,0.08); }
+
+  .btn-row { display: flex; gap: 10px; margin-top: 20px; align-items: center; }
+
+  
+  .alert {
+    padding: 11px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-top: 14px;
+    display: none;
+  }
+  .alert.show { display: block; }
+  .alert-success { background: rgba(76,175,80,0.12); border: 1px solid rgba(76,175,80,0.3); color: #a5d6a7; }
+  .alert-error   { background: rgba(239,83,80,0.12); border: 1px solid rgba(239,83,80,0.3); color: #ef9a9a; }
+
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 11px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  th {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .badge-purple { background: rgba(124,111,255,0.15); color: var(--primary); }
+  .badge-blue   { background: rgba(79,195,247,0.15); color: var(--accent); }
+  .badge-green  { background: rgba(76,175,80,0.15); color: #81c784; }
+
+  /* ── Admin users ── */
+  .user-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .user-row:last-child { border-bottom: none; }
+
+  .user-row-name { font-weight: 600; flex: 1; }
+  .user-row-badges { display: flex; gap: 6px; }
+  .user-row-actions { display: flex; gap: 8px; margin-left: auto; }
+
+  .icon-btn {
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.15s;
+  }
+  .icon-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+  .icon-btn.del:hover { color: #ef9a9a; border-color: rgba(239,83,80,0.4); background: rgba(239,83,80,0.06); }
+
+  .separator {
+    height: 1px;
+    background: var(--border);
+    margin: 24px 0;
+  }
+
+  .hidden { display: none !important; }
+
+  #loading {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: var(--muted);
+    z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<div id="loading">Loading…</div>
+
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <h1>CustomBuild</h1>
+    <p>Control Panel</p>
+  </div>
+
+  <nav>
+    <a class="active" onclick="show('attack')">
+      <span class="icon">⚡</span> Attack
+    </a>
+    <a onclick="show('methods')">
+      <span class="icon">📋</span> Methods
+    </a>
+    <a onclick="show('myinfo')">
+      <span class="icon">👤</span> My Info
+    </a>
+    <a id="nav-admin" class="hidden" onclick="show('admin')">
+      <span class="icon">🛡</span> Admin
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-pill">
+      <div class="avatar" id="avatar">?</div>
+      <div class="user-pill-text">
+        <div class="user-pill-name" id="sidebarUser">—</div>
+        <div class="user-pill-role" id="sidebarRole">—</div>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">Sign out</button>
+  </div>
+</aside>
+
+
+<main class="main">
+
+  
+  <div id="page-attack" class="page active">
+    <div class="page-header">
+      <h2>Send Attack</h2>
+      <p>Launch a stress test against a target.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Target Configuration</div>
+      <div class="form-grid cols3">
+        <div class="field">
+          <label>Method</label>
+          <select id="atk-method"><option value="">Loading…</option></select>
+        </div>
+        <div class="field">
+          <label>Port</label>
+          <input id="atk-port" type="number" placeholder="80" min="1" max="65535" />
+        </div>
+        <div class="field">
+          <label>Duration (s)</label>
+          <input id="atk-time" type="number" placeholder="60" min="1" />
+        </div>
+      </div>
+      <div class="form-grid cols1" style="margin-top:16px">
+        <div class="field">
+          <label>Host / IP</label>
+          <input id="atk-host" type="text" placeholder="1.2.3.4" />
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="atkBtn" onclick="sendAttack()">SEND ATTACK</button>
+        <div id="atk-alert" class="alert" style="margin-top:0; flex:1"></div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div id="page-methods" class="page">
+    <div class="page-header">
+      <h2>Methods</h2>
+      <p>All available attack methods.</p>
+    </div>
+    <div class="card" style="padding:0; overflow:hidden">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Time Limit</th>
+            <th>Permissions</th>
+          </tr>
+        </thead>
+        <tbody id="methods-body">
+          <tr><td colspan="4" style="color:var(--muted); text-align:center; padding:24px">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  
+  <div id="page-myinfo" class="page">
+    <div class="page-header">
+      <h2>My Info</h2>
+      <p>Your account details.</p>
+    </div>
+    <div class="stats" id="info-stats"></div>
+    <div class="card">
+      <div class="card-title">Account Details</div>
+      <div id="info-details" style="display:grid; gap:12px"></div>
+    </div>
+  </div>
+
+  
+  <div id="page-admin" class="page">
+    <div class="page-header">
+      <h2>User Management</h2>
+      <p>Add, edit, or remove users.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Add User</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Username</label>
+          <input id="new-username" type="text" placeholder="username" />
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input id="new-password" type="password" placeholder="password" />
+        </div>
+        <div class="field">
+          <label>Concurrents</label>
+          <input id="new-conc" type="number" value="3" min="0" />
+        </div>
+        <div class="field">
+          <label>Time Limit (s)</label>
+          <input id="new-tl" type="number" value="300" min="0" />
+        </div>
+        <div class="field">
+          <label>Cooldown (s)</label>
+          <input id="new-cd" type="number" value="0" min="0" />
+        </div>
+        <div class="field">
+          <label>Expiry (days, 0 = lifetime)</label>
+          <input id="new-exp" type="number" value="30" min="0" />
+        </div>
+      </div>
+
+      <div style="display:flex; gap:20px; margin-top:16px; align-items:center; flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
+          <input type="checkbox" id="new-admin"> Admin
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
+          <input type="checkbox" id="new-vip"> VIP
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
+          <input type="checkbox" id="new-api" checked> API / Web Access
+        </label>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="addUser()">ADD USER</button>
+        <div id="add-alert" class="alert" style="margin-top:0; flex:1"></div>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="card-title" style="margin-bottom:16px">Users</div>
+    <div class="card">
+      <div id="users-list"><p style="color:var(--muted)">Loading…</p></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  const token = localStorage.getItem('token');
+  if (!token) window.location.href = '/index.html';
+
+  const API = (path, opts = {}) => fetch(path, {
+    ...opts,
+    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', ...(opts.headers || {}) }
+  }).then(async r => {
+    const d = await r.json();
+    if (r.status === 401 || r.status === 403) { logout(); }
+    return d;
+  });
+
+  function logout() {
+    API('/api/logout', { method: 'POST' }).finally(() => {
+      localStorage.clear();
+      window.location.href = '/index.html';
+    });
+  }
+
+  function show(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.querySelector(`[onclick="show('${page}')"]`).classList.add('active');
+    if (page === 'methods') loadMethods();
+    if (page === 'admin') loadUsers();
+  }
+
+  function showAlert(id, type, msg) {
+    const el = document.getElementById(id);
+    el.className = 'alert alert-' + type + ' show';
+    el.textContent = msg;
+    setTimeout(() => el.classList.remove('show'), 4000);
+  }
+
+  
+  async function init() {
+    try {
+    const me = await API('/api/me');
+    if (!me.success) { logout(); return; }
+
+    const u = me.data;
+    localStorage.setItem('admin', u.admin);
+
+    document.getElementById('sidebarUser').textContent = u.username;
+    document.getElementById('avatar').textContent = u.username[0].toUpperCase();
+
+    const roles = [];
+    if (u.admin) roles.push('Admin');
+    if (u.vip) roles.push('VIP');
+    if (!roles.length) roles.push('User');
+    document.getElementById('sidebarRole').textContent = roles.join(' · ');
+
+    if (u.admin) document.getElementById('nav-admin').classList.remove('hidden');
+
+    
+    const stats = [
+      { label: 'Concurrents', value: u.concurrents },
+      { label: 'Time Limit', value: u.timelimit ? u.timelimit + 's' : '∞' },
+      { label: 'Admin', value: u.admin ? 'Yes' : 'No' },
+      { label: 'VIP', value: u.vip ? 'Yes' : 'No' },
+    ];
+    document.getElementById('info-stats').innerHTML = stats.map(s =>
+      `<div class="stat"><div class="stat-label">${s.label}</div><div class="stat-value">${s.value}</div></div>`
+    ).join('');
+    document.getElementById('info-details').innerHTML = `
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="color:var(--muted);min-width:110px">Username</span>
+        <span>${u.username}</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="color:var(--muted);min-width:110px">Permissions</span>
+        <span>${u.permissions || 'None'}</span>
+      </div>
+    `;
+
+    
+    const methods = await API('/api/methods');
+    const sel = document.getElementById('atk-method');
+    if (methods.success && methods.data && methods.data.length) {
+      sel.innerHTML = methods.data.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
+    } else {
+      sel.innerHTML = '<option value="">No methods available</option>';
+    }
+
+    document.getElementById('loading').style.display = 'none';
+    } catch (e) {
+      document.getElementById('loading').innerHTML = '<div style="text-align:center"><p style="margin-bottom:16px">Failed to load dashboard.</p><a href="/index.html" style="color:var(--primary)">Return to login</a></div>';
+    }
+  }
+
+  
+  async function sendAttack() {
+    const method   = document.getElementById('atk-method').value;
+    const host     = document.getElementById('atk-host').value.trim();
+    const port     = document.getElementById('atk-port').value.trim();
+    const duration = document.getElementById('atk-time').value.trim();
+
+    if (!method || !host || !port || !duration) {
+      showAlert('atk-alert', 'error', 'All fields are required.');
+      return;
+    }
+
+    const btn = document.getElementById('atkBtn');
+    btn.disabled = true;
+    btn.textContent = 'SENDING…';
+
+    const res = await API('/api/attack', {
+      method: 'POST',
+      body: JSON.stringify({ method, host, port, time: duration })
+    });
+
+    btn.disabled = false;
+    btn.textContent = 'SEND ATTACK';
+
+    if (res.success) {
+      showAlert('atk-alert', 'success', res.message || 'Attack sent.');
+    } else {
+      showAlert('atk-alert', 'error', res.message || 'Failed.');
+    }
+  }
+
+  
+  async function loadMethods() {
+    const res = await API('/api/methods');
+    const tbody = document.getElementById('methods-body');
+    if (!res.success || !res.data || !res.data.length) {
+      tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);text-align:center;padding:24px">No methods found.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = res.data.map(m => `
+      <tr>
+        <td><strong>${m.name}</strong></td>
+        <td style="color:var(--muted)">${m.description || '—'}</td>
+        <td>${m.time ? m.time + 's' : '∞'}</td>
+        <td>${(m.permission && m.permission.length) ? m.permission.map(p => `<span class="badge badge-purple">${p}</span>`).join(' ') : '<span style="color:var(--muted)">None</span>'}</td>
+      </tr>
+    `).join('');
+  }
+
+ 
+  async function loadUsers() {
+    const res = await API('/api/users');
+    const list = document.getElementById('users-list');
+    if (!res.success || !res.data || !res.data.length) {
+      list.innerHTML = '<p style="color:var(--muted)">No users found.</p>';
+      return;
+    }
+    list.innerHTML = res.data.map(u => `
+      <div class="user-row">
+        <div class="avatar" style="width:28px;height:28px;font-size:11px">${u.username[0].toUpperCase()}</div>
+        <div class="user-row-name">${u.username}</div>
+        <div class="user-row-badges">
+          ${u.admin ? '<span class="badge badge-purple">Admin</span>' : ''}
+          ${u.vip   ? '<span class="badge badge-blue">VIP</span>'    : ''}
+          ${u.api   ? '<span class="badge badge-green">API</span>'   : ''}
+        </div>
+        <span style="color:var(--muted);font-size:12px">${u.concurrents} conc · ${u.expiry}</span>
+        <div class="user-row-actions">
+          <button class="icon-btn del" onclick="deleteUser('${u.username}')">Remove</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function addUser() {
+    const username = document.getElementById('new-username').value.trim();
+    const password = document.getElementById('new-password').value;
+    const concurrents = parseInt(document.getElementById('new-conc').value) || 0;
+    const timelimit   = parseInt(document.getElementById('new-tl').value) || 0;
+    const cooldown    = parseInt(document.getElementById('new-cd').value) || 0;
+    const expiry_days = parseInt(document.getElementById('new-exp').value) || 0;
+    const admin       = document.getElementById('new-admin').checked ? 1 : 0;
+    const vip         = document.getElementById('new-vip').checked   ? 1 : 0;
+    const api         = document.getElementById('new-api').checked   ? 1 : 0;
+
+    if (!username || !password) {
+      showAlert('add-alert', 'error', 'Username and password are required.');
+      return;
+    }
+
+    const res = await API('/api/users', {
+      method: 'POST',
+      body: JSON.stringify({ username, password, concurrents, timelimit, cooldown, expiry_days, admin, vip, api })
+    });
+
+    if (res.success) {
+      showAlert('add-alert', 'success', res.message || 'User created.');
+      document.getElementById('new-username').value = '';
+      document.getElementById('new-password').value = '';
+      loadUsers();
+    } else {
+      showAlert('add-alert', 'error', res.message || 'Failed.');
+    }
+  }
+
+  async function deleteUser(username) {
+    if (!confirm(`Remove user "${username}"?`)) return;
+    const res = await API('/api/users/' + encodeURIComponent(username), { method: 'DELETE' });
+    if (res.success) {
+      loadUsers();
+    } else {
+      alert(res.message || 'Failed to remove user.');
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>
