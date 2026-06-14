@@ -1,0 +1,16 @@
+[
+    {
+        "name": "Put_What_You_Would_Like",
+        "host": "Server_Ip",
+        "port": 22,
+        "username": "Server_Username",
+        "password": "Server_Password"
+    },
+    {
+        "name": "Put_What_You_Would_Like",
+        "host": "Server_Ip",
+        "port": 22,
+        "username": "Server_Username",
+        "password": "Server_Password"
+    }
+]

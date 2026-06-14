@@ -1,0 +1,143 @@
+{
+    "LicenseKey": "Key_Here",
+    "Note1": "Welcome to CustomBuild CNC!, This is the config file! For most changes to come into effect, you will need to restart the CNC.",
+    "Note2": "Here is the area where you can set the CNC's host and port, by default its set to 0.0.0.0:69, by changing this, it will change the ip/port the CNC is hosted on.",
+    "Host": "0.0.0.0",
+    "CNCPort": "1337",
+    "WebAPIPort": "69",
+    "AdminBypassPermissions": true,
+    "Note3": "This is the basic configing system, you can enable/disable the automatic methods/help pages also you can customize the title and set the prompt.",
+    "AutoBanner": false,
+    "AutoMethods": false,
+    "AutoHelp": true,
+    "AutoMyInfo": true,
+    "Custom404": null,
+    "CustomBanner": "banner.a",
+    "CustomAttackSent": "sent.a",
+    "Custom403": null,
+    "Title": "<<USERNAME>>@CustomBuild",
+    "Prompt": "<<USERNAME>>@CustomBuild > ",
+    "SpinnerIcons": [
+        "/",
+        "-",
+        "\\",
+        "|"
+    ],
+    "Colors": {
+        "DefaultGradient": "V2",
+        "Primary": "#FEAC5E",
+        "Secondary": "#C779D0",
+        "Success": "#4BC0C8",
+        "Error": "#FF4136",
+        "Info": "#FF851B"
+    },
+    "Note4": "This area allows you to add custom commands, we have one setup, all you need to do is to use the template, every command must have a command, and file, description and Access is not required, but is used by the generated help page.",
+    "CustomCommands": {
+        "templatecommand": {
+			"Command": "templatecommand",
+            "Description": "This is an template command!",
+            "File": "template.a",
+            "Enabled": true,
+            "Permission": {
+                "Admin": true,
+                "VIP": false
+            }
+        },
+        "testcolors": {
+			"Command": "testcolors",
+            "Description": "This is a command to test the colors!",
+            "File": "colorstest.a",
+            "Enabled": true,
+            "Permission": {
+                "Admin": false,
+                "VIP": false
+            }
+        },
+        "methods": {
+			"Command": "methods",
+            "Description": "methods page",
+            "File": "methods.a",
+            "Enabled": false,
+            "Permission": {
+                "Admin": false,
+                "VIP": false
+            }
+        }
+    },
+    "CustomGradients": {
+        "V2": {
+            "Colors": [
+                "blue",
+                "white"
+            ]
+        }
+    },
+    "Gradients": {
+        "TestOne": {
+            "Start": "blue",
+            "End": "green"
+        },
+        "TestTwo": {
+            "Start": "red",
+            "End": "yellow"
+        },
+        "TestThree": {
+            "Start": "purple",
+            "End": "pink"
+        }
+    },
+    "Note5": "This is the area where you can mess with the the CNC's global limits system.",
+    "MaxGlobalConcurrents": 1000,
+    "Info2": {
+        "Note": "The following is our Markup, you can use it in your custom commands, and in the title, it will be replaced with the correct values, messing with the below will not change how I handle flags.",
+        "Username - Their username": "<<USERNAME>>",
+        "Server Count - Integer": "<<SERVERCOUNT>>",
+        "Used Global Cons - Integer": "<<USEDGLOBALCONS>>",
+        "Max Global Cons - Integer": "<<MAXGLOBALCONS>>",
+        "Spinner - Was from the above spinner icons, forgot to mention, only can be used in the title": "<<SPINNER>>",
+        "Date - US standard (MM/DD/YYYY)": "<<DATE>>",
+        "Current Time - ISO 8601 format (YYYY-MM-DDThh:mm:ss)": "<<CURTIME>>",
+        "Cooldown - Time between attacks (Integer)": "<<COOLDOWN>>",
+        "Concurrents - The amount of concurrents user has": "<<CONCURRENTS>>",
+        "Admin - Returns true/false": "<<ADMIN>>",
+        "VIP - Returns true/false": "<<VIP>>",
+        "API - Returns true/false": "<<API>>",
+        "Expiry Long - In the closest measurement": "<<EXPIRYLONG>>",
+        "Expiry - In days": "<<EXPIRY>>",
+        "Note2": "Below is for the attack sent page only (sent.a)",
+        "Host": "<<HOST>>",
+        "Port": "<<PORT>>",
+        "Method": "<<METHOD>>",
+        "Target": "<<TARGET>>",
+        "Time": "<<TIME>>"
+    },
+    "Info3": {
+        "Note": "We as well have custom functions! These allow you to create gradients and use our typewriter effect!",
+        "Gradient - This is a gradient function, it takes in 2 arguments the start color and the end color.": [
+            "Examples:",
+            "<<gradient(TestOne) Hello in blue to green!<</gradient>>",
+            "<<gradient(TestTwo) Hello in red to yellow!<</gradient>>",
+            "<<gradient(TestThree) Hello in purple to pink!<</gradient>>"
+        ]
+    },
+    "Discord": {
+        "Enabled": false,
+        "Token": "Token_Here",
+        "Webhook": "Webhook_Here",
+        "Note": "You can do a Token or a Webhook, if you do token, it will work with logs, but token will do both, if you have both, it will default to token",
+        "Logs": {
+            "Enabled": false,
+            "Channel": 0
+        },
+        "Monitor": {
+            "Enabled": false,
+            "Channel": 0,
+            "Delay": 5000
+        }
+    },
+    "Telegram": {
+        "Enabled": false,
+        "Token": "Token_Here",
+        "ChannelID": 0
+    }
+}
