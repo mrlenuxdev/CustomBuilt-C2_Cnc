@@ -24,7 +24,7 @@ Days: Six Months License
 # PLAN FIVE DIAMOND
 Description: CUSTOMBUILT CNC+ (Premium. All DLCs.) - 365 days
 Price: $300
-Days: Tweleve Months License
+Days: Twelve Months License
 
 
 # PLAN SIX MASTER
